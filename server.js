@@ -1,8 +1,13 @@
 const express = require("express");
 const app = express();
 const path = require("path");
+const { logger } = require("./middleware/logEvents");
+const errorHandler = require("./middleware/errorHandler");
 
 const PORT = 3500;
+
+// middleware to keep record of all request logs
+app.use(logger);
 
 // middleware for static files
 app.use("/", express.static(path.join(__dirname, "public")));
@@ -21,5 +26,7 @@ app.use("*", (req, res) => {
     res.type(txt).send("404 Not Found");
   }
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
