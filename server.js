@@ -1,13 +1,26 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const path = require("path");
-const { logger } = require("./middleware/logEvents");
+const { logger, logEvents } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
+const cors = require("cors");
+const corsOptions = require("./config/corsOptions");
+const connectDB = require("./config/dbConn");
+const mongoose = require("mongoose");
+const PORT = process.env.PORT || 3500;
 
-const PORT = 3500;
+// middleware to connect to mongoDB database
+connectDB();
 
 // middleware to keep record of all request logs
 app.use(logger);
+
+// middleware for cross-origin-resource-sharing
+app.use(cors(corsOptions));
+
+// middleware to process json data
+app.use(express.json());
 
 // middleware for static files
 app.use("/", express.static(path.join(__dirname, "public")));
@@ -29,4 +42,15 @@ app.use("*", (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Server running at port ${PORT}`));
+mongoose.connection.once("open", () => {
+  console.log("Connected to MongoDB");
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+});
+
+mongoose.connection.on("error", (err) => {
+  console.log(err);
+  logEvents(
+    `${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`,
+    "mongoErrLog.log"
+  );
+});
