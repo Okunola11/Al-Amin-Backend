@@ -28,6 +28,8 @@ app.use("/", express.static(path.join(__dirname, "public")));
 //routes
 app.use("/", require("./routes/root"));
 
+app.use("/results", require("./routes/resultRoutes"));
+
 // catching pages or requests not found
 app.use("*", (req, res) => {
   res.status(404);

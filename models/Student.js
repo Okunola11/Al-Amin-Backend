@@ -6,11 +6,11 @@ const studentSchema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
-  studentID: {
+  studentName: {
     type: String,
     required: true,
   },
-  studentName: {
+  studentID: {
     type: String,
     required: true,
   },
