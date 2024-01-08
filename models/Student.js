@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema({
-  classTeacher: {
+  teacher: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "User",
   },
-  studentName: {
+  studentname: {
     type: String,
     required: true,
   },
-  studentID: {
+  studentnum: {
     type: String,
     required: true,
   },
@@ -18,11 +18,11 @@ const studentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  class: {
+  classname: {
     type: String,
     required: true,
   },
-  subject: {
+  subjects: {
     type: [String],
     require: true,
     default: ["Mathematics", "English Language", "Yoruba"],
