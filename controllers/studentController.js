@@ -8,9 +8,9 @@ const asyncHandler = require("express-async-handler");
 //@access Private
 const getAllStudents = asyncHandler(async (req, res) => {
   // Query the database for the students
-  const students = await Student.find().select(-password).lean();
+  const students = await Student.find().select("-password").lean();
 
-  if (!students) {
+  if (!students?.length) {
     return res.status(400).json({ message: "No students found" });
   }
 
@@ -18,7 +18,7 @@ const getAllStudents = asyncHandler(async (req, res) => {
   const studentWithTeachers = await Promise.all(
     students.map(async (student) => {
       const teacher = await User.findById(student.teacher).lean().exec();
-      return { ...students, teacher: teacher.username };
+      return { ...student, teacher: teacher.username };
     })
   );
 
@@ -51,7 +51,7 @@ const postStudent = asyncHandler(async (req, res) => {
     .lean()
     .exec();
   if (duplicate) {
-    return res.status(409).json({ message: "Duplicate username" });
+    return res.status(409).json({ message: "Duplicate studentnum" });
   }
 
   // encrypt the password
@@ -82,8 +82,15 @@ const postStudent = asyncHandler(async (req, res) => {
 //@route PUT /students
 //@access Private
 const updateStudent = asyncHandler(async (req, res) => {
-  const { teacher, studentname, studentnum, password, classname, subjects } =
-    req.body;
+  const {
+    id,
+    teacher,
+    studentname,
+    studentnum,
+    password,
+    classname,
+    subjects,
+  } = req.body;
 
   if (
     !id ||
@@ -120,6 +127,7 @@ const updateStudent = asyncHandler(async (req, res) => {
   student.subjects = subjects;
   if (password) {
     const hashedPwd = await bcrypt.hash(password, 10);
+    student.password = hashedPwd;
   }
 
   const updatedStudent = await student.save();
@@ -139,7 +147,7 @@ const deleteStudent = asyncHandler(async (req, res) => {
   }
 
   // Query the database for the User
-  const student = await Student.findById(id).lean().exec();
+  const student = await Student.findById(id).exec();
 
   if (!student) {
     return res.status(400).json({ message: "No student found" });
@@ -147,7 +155,7 @@ const deleteStudent = asyncHandler(async (req, res) => {
 
   const result = await student.deleteOne();
 
-  const reply = `Student ${result.studentname} with student ID number ${result.studentnum} deleted `;
+  const reply = `Student ${student.studentname} with student ID number ${student.studentnum} deleted `;
 
   res.json(reply);
 });

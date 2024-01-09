@@ -29,6 +29,8 @@ app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/", require("./routes/root"));
 
 app.use("/results", require("./routes/resultRoutes"));
+app.use("/students", require("./routes/studentRoutes"));
+app.use("/users", require("./routes/userRoutes"));
 
 // catching pages or requests not found
 app.use("*", (req, res) => {

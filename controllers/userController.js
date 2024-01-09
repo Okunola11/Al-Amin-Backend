@@ -7,10 +7,10 @@ const asyncHandler = require("express-async-handler");
 //@access Private
 const getAllUsers = asyncHandler(async (req, res) => {
   // get all users from mongoDB
-  const users = await User.find().select(-password).lean();
+  const users = await User.find().select("-password").lean();
 
   // If no user
-  if (!users) {
+  if (!users?.length) {
     return res.status(400).json({ message: "No users found" });
   }
 
@@ -131,8 +131,9 @@ const deleteUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User not found" });
   }
 
-  const result = user.deleteOne();
-  const reply = `Employee ${result.username} with usernumber ${result.usernum} and ID ${result._id} has been deleted`;
+  const result = await user.deleteOne();
+  const reply = `Employee ${user.username} with usernumber ${user.usernum} and ID ${user._id} has been deleted`;
+  res.json(reply);
 });
 
 module.exports = { getAllUsers, postUser, updateUser, deleteUser };
