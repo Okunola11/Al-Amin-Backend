@@ -6,11 +6,11 @@ const studentSchema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
-  studentname: {
+  username: {
     type: String,
     required: true,
   },
-  studentnum: {
+  usernum: {
     type: String,
     required: true,
   },
@@ -26,6 +26,10 @@ const studentSchema = new mongoose.Schema({
     type: [String],
     require: true,
     default: ["Mathematics", "English Language", "Yoruba"],
+  },
+  roles: {
+    type: [String],
+    default: ["Student"],
   },
 });
 

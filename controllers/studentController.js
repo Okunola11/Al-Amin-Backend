@@ -29,14 +29,14 @@ const getAllStudents = asyncHandler(async (req, res) => {
 //@route POST /students
 //@access Private
 const postStudent = asyncHandler(async (req, res) => {
-  const { teacher, studentname, studentnum, password, classname, subjects } =
+  const { teacher, username, usernum, password, classname, subjects } =
     req.body;
 
   // confirm the data is received
   if (
     !teacher ||
-    !studentname ||
-    !studentnum ||
+    !username ||
+    !usernum ||
     !password ||
     !classname ||
     !subjects?.length ||
@@ -46,20 +46,20 @@ const postStudent = asyncHandler(async (req, res) => {
   }
 
   // Check for duplicate
-  const duplicate = await Student.findOne({ studentnum })
+  const duplicate = await Student.findOne({ usernum })
     .collation({ locale: "en", strength: 2 })
     .lean()
     .exec();
   if (duplicate) {
-    return res.status(409).json({ message: "Duplicate studentnum" });
+    return res.status(409).json({ message: "Duplicate usernum" });
   }
 
   // encrypt the password
   const hashedPwd = await bcrypt.hash(password, 10);
 
   const studentObject = {
-    studentname,
-    studentnum,
+    username,
+    usernum,
     "password": hashedPwd,
     teacher,
     classname,
@@ -72,7 +72,7 @@ const postStudent = asyncHandler(async (req, res) => {
   if (student) {
     return res
       .status(201)
-      .json({ message: `New student ${studentname} created.` });
+      .json({ message: `New student ${username} created.` });
   } else {
     return res.status(400).json({ message: "Invalid student data entry" });
   }
@@ -82,21 +82,14 @@ const postStudent = asyncHandler(async (req, res) => {
 //@route PUT /students
 //@access Private
 const updateStudent = asyncHandler(async (req, res) => {
-  const {
-    id,
-    teacher,
-    studentname,
-    studentnum,
-    password,
-    classname,
-    subjects,
-  } = req.body;
+  const { id, teacher, username, usernum, password, classname, subjects } =
+    req.body;
 
   if (
     !id ||
     !teacher ||
-    !studentname ||
-    !studentnum ||
+    !username ||
+    !usernum ||
     !classname ||
     !subjects?.length ||
     !Array.isArray(subjects)
@@ -112,7 +105,7 @@ const updateStudent = asyncHandler(async (req, res) => {
   }
 
   // Check for duplicate
-  const duplicate = await Student.findOne({ studentnum })
+  const duplicate = await Student.findOne({ usernum })
     .collation({ locale: "en", strength: 2 })
     .lean()
     .exec();
@@ -121,8 +114,8 @@ const updateStudent = asyncHandler(async (req, res) => {
   }
 
   student.teacher = teacher;
-  student.studentname = studentname;
-  student.studentnum = studentnum;
+  student.username = username;
+  student.usernum = usernum;
   student.classname = classname;
   student.subjects = subjects;
   if (password) {
@@ -132,7 +125,7 @@ const updateStudent = asyncHandler(async (req, res) => {
 
   const updatedStudent = await student.save();
 
-  res.json({ message: `${updatedStudent.studentname} updated` });
+  res.json({ message: `${updatedStudent.username} updated` });
 });
 
 //@desc Delete a student
@@ -155,7 +148,7 @@ const deleteStudent = asyncHandler(async (req, res) => {
 
   const result = await student.deleteOne();
 
-  const reply = `Student ${student.studentname} with student ID number ${student.studentnum} deleted `;
+  const reply = `Student ${student.username} with student ID number ${student.usernum} deleted `;
 
   res.json(reply);
 });

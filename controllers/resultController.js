@@ -18,7 +18,7 @@ const getAllResults = asyncHandler(async (req, res) => {
   const resultWithStudent = await Promise.all(
     results.map(async (result) => {
       const student = await Student.findById(result.student).lean().exec();
-      return { ...results, student: student.studentnum };
+      return { ...results, student: student.usernum };
     })
   );
 

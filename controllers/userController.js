@@ -24,13 +24,7 @@ const postUser = asyncHandler(async (req, res) => {
   const { username, usernum, password, roles } = req.body;
 
   // confirm that the data
-  if (
-    !username ||
-    !usernum ||
-    !password ||
-    !Array.isArray(roles) ||
-    !roles.length
-  ) {
+  if (!username || !usernum || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
