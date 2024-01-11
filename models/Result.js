@@ -7,9 +7,7 @@ const resultSchema = new mongoose.Schema(
       required: true,
       ref: "Student",
     },
-    name: {
-      type: String,
-    },
+
     subjects: [
       {
         name: String,

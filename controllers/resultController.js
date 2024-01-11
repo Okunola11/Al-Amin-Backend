@@ -18,7 +18,12 @@ const getAllResults = asyncHandler(async (req, res) => {
   const resultWithStudent = await Promise.all(
     results.map(async (result) => {
       const student = await Student.findById(result.student).lean().exec();
-      return { ...results, student: student.usernum };
+      return {
+        ...result,
+        username: student.username,
+        classname: student.classname,
+        studentID: student.usernum,
+      };
     })
   );
 
@@ -29,10 +34,10 @@ const getAllResults = asyncHandler(async (req, res) => {
 //@route POST /results
 //@access Private
 const postResult = asyncHandler(async (req, res) => {
-  const { student, name, subjects } = req.body;
+  const { student, subjects } = req.body;
 
   // Confirm the data is received
-  if (!student || !name || !subjects.length || !Array.isArray(subjects)) {
+  if (!student || !subjects?.length || !Array.isArray(subjects)) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -41,9 +46,9 @@ const postResult = asyncHandler(async (req, res) => {
     .collation({ locale: "en", strength: 2 })
     .lean()
     .exec();
-  /* if (duplicate) {
-    return res.status(409).json({ messasge: "Student already has a result" });
-  } */
+  if (duplicate) {
+    return res.status(409).json({ message: "Student already has a result" });
+  }
 
   // calculte the grade for each subject score
   const calculateGrade = (result) => {
@@ -78,7 +83,6 @@ const postResult = asyncHandler(async (req, res) => {
 
   const studentWithGradesObject = {
     student,
-    name,
     subjects: subjects.map((subject) => ({
       name: subject.name,
       result: subject.result,
@@ -92,7 +96,7 @@ const postResult = asyncHandler(async (req, res) => {
   if (result) {
     return res
       .status(201)
-      .json({ message: `New result for ${result.name} created.` });
+      .json({ message: `New result for ${result.student} created.` });
   } else {
     return res.status(400).json({ message: "Invalid data entry" });
   }
@@ -102,14 +106,8 @@ const postResult = asyncHandler(async (req, res) => {
 //@route PUT /results
 //@access Private
 const updateResult = asyncHandler(async (req, res) => {
-  const { id, student, name, subjects } = req.body;
-  if (
-    !id ||
-    !student ||
-    !name ||
-    !subjects.length ||
-    !Array.isArray(subjects)
-  ) {
+  const { id, student, subjects } = req.body;
+  if (!id || !student || !subjects.length || !Array.isArray(subjects)) {
     return res.status(400).json({ message: "All fields are required" });
   }
   // query to know the exact result to update
@@ -130,7 +128,6 @@ const updateResult = asyncHandler(async (req, res) => {
   }
 
   result.student = student;
-  result.name = name;
   if (subjects) {
     // calculte the grade for each subject score
     const calculateGrade = (result) => {
@@ -173,7 +170,7 @@ const updateResult = asyncHandler(async (req, res) => {
 
   const savedResult = await result.save();
   res.status(201).json({
-    message: `Results of ${result.name} has been successfully updated`,
+    message: `Results of ${result.student} has been successfully updated`,
   });
 });
 
@@ -196,7 +193,7 @@ const deleteResult = asyncHandler(async (req, res) => {
 
   const deleteResult = await result.deleteOne();
 
-  const reply = `Results of ${result.name} with ID ${result._id} has been deleted`;
+  const reply = `Results of ${result.student} with ID ${result._id} has been deleted`;
 
   res.json(reply);
 });
