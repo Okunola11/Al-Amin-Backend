@@ -6,7 +6,7 @@ router
   .route("/")
   .get(studentController.getAllStudents)
   .post(studentController.postStudent)
-  .put(studentController.updateStudent)
+  .patch(studentController.updateStudent)
   .delete(studentController.deleteStudent);
 
 module.exports = router;

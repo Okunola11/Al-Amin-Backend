@@ -6,7 +6,7 @@ router
   .route("/")
   .get(resultController.getAllResults)
   .post(resultController.postResult)
-  .put(resultController.updateResult)
+  .patch(resultController.updateResult)
   .delete(resultController.deleteResult);
 
 module.exports = router;
