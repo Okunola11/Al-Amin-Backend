@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Student = require("../models/Student");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 
@@ -115,6 +116,15 @@ const deleteUser = asyncHandler(async (req, res) => {
   // Confirm if data is gotten
   if (!id) {
     return res.status(400).json({ message: "User ID is required" });
+  }
+
+  // Make sure Employee is not assigned as the class teacher of a student
+  const student = Student.findOne({ teacher: id }).lean().exec();
+
+  if (student) {
+    return res
+      .status(400)
+      .json({ message: "Employee is assigned as a Class Teacher" });
   }
 
   // Find the user

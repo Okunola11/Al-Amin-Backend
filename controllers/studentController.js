@@ -1,5 +1,6 @@
 const Student = require("../models/Student");
 const User = require("../models/User");
+const Result = require("../models/Result");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 
@@ -137,6 +138,13 @@ const deleteStudent = asyncHandler(async (req, res) => {
   // Confirm the data
   if (!id) {
     return res.status(400).json({ message: "Student ID is required" });
+  }
+
+  // check to see if the student has a result in the database
+  const studentWithResult = Result.findOne({ student: id }).lean().exec();
+
+  if (studentWithResult) {
+    return res.status(400).json({ message: "Student has an assigned result" });
   }
 
   // Query the database for the User
