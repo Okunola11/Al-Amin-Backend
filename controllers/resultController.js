@@ -1,5 +1,6 @@
 const Result = require("../models/Result");
 const Student = require("../models/Student");
+const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 
 //@desc Get all results
@@ -18,11 +19,13 @@ const getAllResults = asyncHandler(async (req, res) => {
   const resultWithStudent = await Promise.all(
     results.map(async (result) => {
       const student = await Student.findById(result.student).lean().exec();
+      const teacher = await User.findById(student.teacher).lean().exec();
       return {
         ...result,
         username: student.username,
         classname: student.classname,
         studentID: student.usernum,
+        teachernum: teacher.usernum,
       };
     })
   );

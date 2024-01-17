@@ -19,7 +19,11 @@ const getAllStudents = asyncHandler(async (req, res) => {
   const studentWithTeachers = await Promise.all(
     students.map(async (student) => {
       const teacher = await User.findById(student.teacher).lean().exec();
-      return { ...student, teachername: teacher.username };
+      return {
+        ...student,
+        teachername: teacher.username,
+        teachernum: teacher.usernum,
+      };
     })
   );
 

@@ -4,8 +4,10 @@ const app = express();
 const path = require("path");
 const { logger, logEvents } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
+const verifyJWT = require("./middleware/verifyJWT");
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
+const cookieParser = require("cookie-parser");
 const connectDB = require("./config/dbConn");
 const mongoose = require("mongoose");
 const PORT = process.env.PORT || 3500;
@@ -22,12 +24,17 @@ app.use(cors(corsOptions));
 // middleware to process json data
 app.use(express.json());
 
+// middleware for cookies
+app.use(cookieParser());
+
 // middleware for static files
 app.use("/", express.static(path.join(__dirname, "public")));
 
 //routes
 app.use("/", require("./routes/root"));
+app.use("/auth", require("./routes/authRoutes"));
 
+app.use(verifyJWT);
 app.use("/results", require("./routes/resultRoutes"));
 app.use("/students", require("./routes/studentRoutes"));
 app.use("/users", require("./routes/userRoutes"));
