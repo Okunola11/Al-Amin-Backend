@@ -129,7 +129,6 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
       findUser = await User.findOne({ usernum: decoded.usernum }).exec();
       if (!findUser)
         findUser = await Student.findOne({ usernum: decoded.usernum }).exec();
-      console.log(findUser);
 
       if (!findUser) return res.status(401).json({ message: "Unauthorized" });
 

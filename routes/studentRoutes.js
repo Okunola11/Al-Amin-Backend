@@ -6,10 +6,7 @@ const verifyRoles = require("../middleware/verifyRoles");
 
 router
   .route("/")
-  .get(
-    verifyRoles(ROLES.Admin, ROLES.Executive, ROLES.Employee),
-    studentController.getAllStudents
-  )
+  .get(studentController.getAllStudents)
   .post(
     verifyRoles(ROLES.Admin, ROLES.Executive, ROLES.Employee),
     studentController.postStudent
