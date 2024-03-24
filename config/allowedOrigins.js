@@ -1,2 +1,2 @@
-const allowedOrigins = ["https://al-amin.onrender.com/"];
+const allowedOrigins = ["https://al-amin.onrender.com"];
 module.exports = allowedOrigins;
