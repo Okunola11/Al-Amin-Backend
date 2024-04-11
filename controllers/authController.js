@@ -33,13 +33,13 @@ const handleUserLogin = asyncHandler(async (req, res) => {
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "15s" }
+      { expiresIn: "15m" }
     );
 
     const refreshToken = jwt.sign(
       { "usernum": findUser.usernum },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "7d" }
     );
 
     // create a http only secure cookie to store the refreshToken
@@ -87,13 +87,13 @@ const handleStudentLogin = asyncHandler(async (req, res) => {
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "15s" }
+      { expiresIn: "15m" }
     );
 
     const refreshToken = jwt.sign(
       { "usernum": findStudent.usernum },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "7d" }
     );
 
     // create a http only secure cookie to store the refreshToken
@@ -142,7 +142,7 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
           },
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "15s" }
+        { expiresIn: "15m" }
       );
       res.json({ accessToken });
     })
